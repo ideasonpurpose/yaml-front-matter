@@ -1,0 +1,6 @@
+title: YAML test file
+array:
+  - up
+  - down
+  - left
+  - right
