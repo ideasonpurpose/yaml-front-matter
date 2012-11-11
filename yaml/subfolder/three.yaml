@@ -1,0 +1,6 @@
+title: YAML test file 3
+array:
+  - cow
+  - goat
+  - pig
+  - chicken
