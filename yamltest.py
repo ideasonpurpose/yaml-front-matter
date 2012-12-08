@@ -13,7 +13,7 @@ from termcolor import colored
 start_time = time()
 total, errors, passed = 0, 0, 0
 
-yamlroot = '/Users/joe/Sites/iop/content'
+yamlroot = os.path.realpath('../../content')
 for root, subdirs, files in os.walk(yamlroot):
     for f in files:
         filepath = os.path.join(root, f)
