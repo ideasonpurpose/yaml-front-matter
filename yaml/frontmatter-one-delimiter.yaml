@@ -1,0 +1,5 @@
+title: Testing YAML frontmatter
+
+---
+
+The body text. This file only has a closing '---' delimiter before this body text.

@@ -18,26 +18,34 @@ class Framework_YamlTests extends PHPUnit_Framework_TestCase
       $one = Array ('title'=> 'YAML test file',
                          'slug' => 'one',
                          'array' => array('red', 'blue', 'green', 'yellow'),
-                         'yaml_source_file' => __DIR__ . '/yaml/one.yaml');
+                         'yaml_source_file' => __DIR__ . '/yaml/tree/one.yaml');
 
       $two = Array ('title'=> 'YAML test file',
                          'slug' => 'two',
                          'array' => array('up', 'down', 'left', 'right'),
-                         'yaml_source_file' => __DIR__ . '/yaml/two.yaml');
+                         'yaml_source_file' => __DIR__ . '/yaml/tree/two.yaml');
 
       $three = Array ('title'=> 'YAML test file 3',
                       'slug' => 'three',
                       'array' => array('cow', 'goat', 'pig', 'chicken'),
-                      'yaml_source_file' => __DIR__ . '/yaml/subfolder/three.yaml');
+                      'yaml_source_file' => __DIR__ . '/yaml/tree/subfolder/three.yaml');
+
+      $frontmatter1 = Array ('slug' => 'frontmatter-one-delimiter',
+                            'yaml_source_file' =>  __DIR__ . 'yaml/frontmatter-one-delimiter.yaml',
+                            'title' => 'Testing YAML frontmatter',
+                            'body' => "The body text. This file only has a closing '---' delimiter before this body text.");
+      $frontmatter2 = $frontmatter1;
+      $frontmatter2['yaml_source_file'] = __DIR__ . 'yaml/frontmatter-two-delimiters.yaml';
 
 
-      $this->yaml_files = (object) array('one'=>(object) array('file'=>'/yaml/one.yaml', 'content'=>$one),
-                                         'two'=>(object) array('file'=>'/yaml/two.yaml', 'content'=>$two),
-                                         'three'=>(object) array('file'=>'/yaml/subfolder/three.yaml', 'content'=>$three)
+
+      $this->yaml_files = (object) array('one'=>(object) array('file'=>'/yaml/tree/one.yaml', 'content'=>$one),
+                                         'two'=>(object) array('file'=>'/yaml/tree/two.yaml', 'content'=>$two),
+                                         'three'=>(object) array('file'=>'/yaml/tree/subfolder/three.yaml', 'content'=>$three)
                                         );
-      $this->yaml_tree = array('one' => $this->yaml_files->one->content, 
+      $this->yaml_tree = array('one' => $this->yaml_files->one->content,
                                'subfolder' => array(
-                                                    'three' => $this->yaml_files->three->content, 
+                                                    'three' => $this->yaml_files->three->content,
                                                     'pages' => array($this->yaml_files->three->content)
                                                     ),
                                'two' => $this->yaml_files->two->content,
@@ -81,7 +89,7 @@ class Framework_YamlTests extends PHPUnit_Framework_TestCase
     public function testGetYamlFilesInPath()
     {
       $expected = array($this->yaml_files->one->content, $this->yaml_files->two->content);
-      $actual = getYamlFilesInPath( 'app/Tests/yaml');
+      $actual = getYamlFilesInPath( 'app/Tests/yaml/tree');
       $this->assertEquals($expected, $actual);
     }
 
@@ -94,14 +102,14 @@ class Framework_YamlTests extends PHPUnit_Framework_TestCase
     public function test_loadFilesInPath()
     {
       $expected = array($this->yaml_files->one->content, $this->yaml_files->two->content);
-      $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml');
+      $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml/tree');
       $this->assertEquals($expected, $actual);
     }
 
     public function test_getYamlFilesInPath_looped()
     {
       for ($i=1; $i < $this->timing_iterations; $i++) {
-        getYamlFilesInPath( 'app/Tests/yaml');
+        getYamlFilesInPath( 'app/Tests/yaml/tree');
       }
       $this->assertTrue(True);
 
@@ -110,7 +118,7 @@ class Framework_YamlTests extends PHPUnit_Framework_TestCase
     public function test_loadFilesInPath_looped()
     {
       for ($i=1; $i < $this->timing_iterations; $i++) {
-        IOPYaml::loadFilesInPath(__DIR__ . '/yaml');
+        IOPYaml::loadFilesInPath(__DIR__ . '/yaml/tree');
       }
       $this->assertTrue(True);
 
@@ -118,16 +126,28 @@ class Framework_YamlTests extends PHPUnit_Framework_TestCase
 
     public function test_loading_methods()
     {
-      $expected = getYamlFilesInPath( 'app/Tests/yaml');
-      $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml');
+      $expected = getYamlFilesInPath( 'app/Tests/yaml/tree');
+      $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml/tree');
       $this->assertEquals($expected, $actual);
     }
 
     public function test_yaml_loadTree()
     {
       $expected = $this->yaml_tree;
-      $actual = IOPYaml::loadTree(__DIR__ . '/yaml');
+      $actual = IOPYaml::loadTree(__DIR__ . '/yaml/tree');
       $this->assertEquals($expected, $actual);
+    }
+
+    public function test_yaml_frontmatter_one_delimiters()
+    {
+      $actual = IOPYaml::parse(__DIR__ . '/yaml/frontmatter-one-delimiter.yaml');
+      $this->assertEquals(4, count($actual));
+    }
+
+    public function test_yaml_frontmatter_two_delimiters()
+    {
+      $actual = IOPYaml::parse(__DIR__ . '/yaml/frontmatter-two-delimiters.yaml');
+      $this->assertEquals(4, count($actual));
     }
 
   }
