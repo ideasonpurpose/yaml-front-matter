@@ -52,22 +52,6 @@ class Framework_YamlTests extends PHPUnit_Framework_TestCase
                                 'pages' => array($this->yaml_files->one->content, $this->yaml_files->two->content));
     }
 
-    public function testLoadYaml_oldway()
-    {
-      $yaml = $this->yaml_files->one;
-      $expected = $yaml->content;
-      $actual = load_yaml( __DIR__ . $yaml->file);
-      $this->assertEquals($expected, $actual);
-    }
-
-    public function testLoadYaml_oldway_looped()
-    {
-      $yaml = $this->yaml_files->one;
-      for ($i=1; $i < $this->timing_iterations; $i++) {
-        load_yaml( dirname(__FILE__) . $yaml->file);
-      }
-      $this->assertTrue(True);
-    }
 
     public function testYamlObjectLoadMethod()
     {
@@ -95,7 +79,7 @@ class Framework_YamlTests extends PHPUnit_Framework_TestCase
 
     public function testLoadYamlAddsSlug()
     {
-      $yaml = load_yaml(  dirname(__FILE__) . $this->yaml_files->one->file);
+      $yaml = IOPYaml::load(  dirname(__FILE__) . $this->yaml_files->one->file);
       $this->assertArrayHasKey('slug', $yaml);
     }
 
