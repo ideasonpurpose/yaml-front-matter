@@ -71,13 +71,6 @@ class Framework_YamlTests extends PHPUnit_Framework_TestCase
       $this->assertTrue(True);
     }
 
-    public function testGetYamlFilesInPath()
-    {
-      $expected = array($this->yaml_files->one->content, $this->yaml_files->two->content);
-      $actual = getYamlFilesInPath( 'app/Tests/yaml/tree');
-      $this->assertEquals($expected, $actual);
-    }
-
     public function testLoadYamlAddsSlug()
     {
       $yaml = IOPYaml::load(  dirname(__FILE__) . $this->yaml_files->one->file);
@@ -91,15 +84,6 @@ class Framework_YamlTests extends PHPUnit_Framework_TestCase
       $this->assertEquals($expected, $actual);
     }
 
-    public function test_getYamlFilesInPath_looped()
-    {
-      for ($i=1; $i < $this->timing_iterations; $i++) {
-        getYamlFilesInPath( 'app/Tests/yaml/tree');
-      }
-      $this->assertTrue(True);
-
-    }
-
     public function test_loadFilesInPath_looped()
     {
       for ($i=1; $i < $this->timing_iterations; $i++) {
@@ -107,13 +91,6 @@ class Framework_YamlTests extends PHPUnit_Framework_TestCase
       }
       $this->assertTrue(True);
 
-    }
-
-    public function test_loading_methods()
-    {
-      $expected = getYamlFilesInPath( 'app/Tests/yaml/tree');
-      $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml/tree');
-      $this->assertEquals($expected, $actual);
     }
 
     public function test_yaml_loadTree()
