@@ -4,7 +4,8 @@
 $_SERVER['HTTP_HOST'] = 'ideasonpurpose.com';
 
 require_once __DIR__ . '/../functions.php';
-require_once __DIR__ . '/../lib/IOPYaml.php';
+// require_once __DIR__ . '/../lib/IOP/IOPYaml.php';
+use IOP\IOPYaml;
 
 class Framework_YamlTests extends PHPUnit_Framework_TestCase
 {
