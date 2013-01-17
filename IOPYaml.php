@@ -89,11 +89,16 @@ class IOPYaml extends Yaml
      */
     public static function loadTree($path)
     {
+
         $tree = array();
-        $Directory = new RecursiveDirectoryIterator($path);
+        $Directory = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS);
         $Iterator = new RecursiveIteratorIterator($Directory);
 
+
+
         foreach ($Iterator as $file) {
+            d($file->getPathname());
+            continue;
             if (in_array(strtolower($file->getExtension()), array('yaml', 'yml'))) {
                 $flat[] = $file->getPathname();
                 $path_parts = preg_split('#/#', str_replace($path, '', $file->getPath()), NULL, PREG_SPLIT_NO_EMPTY);
