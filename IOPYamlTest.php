@@ -101,6 +101,11 @@ class Framework_YamlTests extends PHPUnit_Framework_TestCase
     //   $this->assertEquals($expected, $actual);
     // }
 
+    public function testLoadFilesInNotAPath()
+    {
+        $this->assertEmpty(IOPYaml::loadFilesInPath(__DIR__ . 'not_a_path'));
+    }
+
     public function test_yaml_frontmatter_one_delimiters()
     {
       $actual = IOPYaml::parse(__DIR__ . '/yaml/frontmatter-one-delimiter.yaml');
