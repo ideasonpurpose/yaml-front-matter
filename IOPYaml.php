@@ -51,17 +51,28 @@ class IOPYaml extends Yaml
         return self::parse($path);
     }
 
+    /**
+     * Loads all yaml files in $path
+     * @param  string $path The path to search for YAML files
+     * @return array       Returns either an array of parsed YAML or an empty array
+     */
     public static function loadFilesInPath($path)
     {
         $files = array();
         $pattern = '/\.ya?ml/i';
-        $dir = new DirectoryIterator($path);
-        $Filter = new RegexIterator($dir, $pattern, RegexIterator::MATCH);
-        foreach ($Filter as $file) {
-            $contents = self::load($file->getPathname());
-            if ($contents) $files[] = $contents;
+        try {
+            $dir = new DirectoryIterator($path);
+            $Filter = new RegexIterator($dir, $pattern, RegexIterator::MATCH);
+            foreach ($Filter as $file) {
+                $contents = self::load($file->getPathname());
+                if ($contents) {
+                    $files[] = $contents;
+                }
+            }
+            return $files;
+        } catch (\Exception $e) {
+            return array();
         }
-        return $files;
     }
 
     /**
@@ -89,12 +100,17 @@ class IOPYaml extends Yaml
      */
     public static function loadTree($path)
     {
+
         $tree = array();
-        $Directory = new RecursiveDirectoryIterator($path);
+        $Directory = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS);
         $Iterator = new RecursiveIteratorIterator($Directory);
+
+
 
         foreach ($Iterator as $file) {
             if (in_array(strtolower($file->getExtension()), array('yaml', 'yml'))) {
+                d($file->getPathname());
+                continue;
                 $flat[] = $file->getPathname();
                 $path_parts = preg_split('#/#', str_replace($path, '', $file->getPath()), NULL, PREG_SPLIT_NO_EMPTY);
 
