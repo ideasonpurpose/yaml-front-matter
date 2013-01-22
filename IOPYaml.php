@@ -30,25 +30,34 @@ class IOPYaml extends Yaml
                 }
                 $yaml['body'] .= "\n" . $fileparts[1];
             }
-
             return (is_array($yaml)) ? $yaml : array();
-        }
-        catch (Exception $e) {
-            d(get_class($path));
-            if (get_class($path) == 'SplFileObject')
+        } catch (Exception $e) {
+            if (get_class($path) == 'SplFileObject') {
                 $path = $path->getFilename();
+            }
             printf(ERROR_FORMAT, "An error occurred: Unable to parse '$path'\n");
-            printf(ERROR_FORMAT,  implode("\n\t", explode("\n", $e)) . "\n");
+            printf(ERROR_FORMAT, implode("\n\t", explode("\n", $e)) . "\n");
             return array();
         }
     }
 
     /**
-     * placeholder until the load method is factored out
+     * Load and cache YAML files.
+     * @param  string $path Path to the YAML file
+     * @return array       returns a parsed array
      */
     public static function load($path)
     {
-        return self::parse($path);
+        $cache = true;  // enable caching
+        $cachefile = WEB_ROOT . '/app/cache' . getRootRelativeUrl(realpath($path)) . '.json';
+        if (!file_exists($cachefile) || filemtime($cachefile) < filemtime($path) || $cache == false) {
+            $file = self::parse($path);
+            @mkdir(dirname($cachefile), 0755, true);
+            file_put_contents($cachefile, json_encode($file));
+        } else {
+            $file = json_decode(file_get_contents($cachefile), true);
+        }
+        return $file;
     }
 
     /**
@@ -87,7 +96,9 @@ class IOPYaml extends Yaml
         $Filter = new RegexIterator($Iterator, $pattern, RegexIterator::MATCH);
         foreach ($Filter as $file) {
             $contents = self::load($file->getPathname());
-            if ($contents) $files[] = $contents;
+            if ($contents) {
+                $files[] = $contents;
+            }
         }
         return $files;
 
