@@ -3,7 +3,12 @@
 // fake the server location for error reporting
 $_SERVER['HTTP_HOST'] = 'ideasonpurpose.com';
 
+// Use custom Cache location since tests run as a different user
+define('CACHE_DIR', '/tmp');
+
 require_once __DIR__ . '/../functions.php';
+
+
 // require_once __DIR__ . '/../lib/IOP/IOPYaml.php';
 use IOP\IOPYaml;
 
