@@ -49,7 +49,7 @@ class IOPYaml extends Yaml
     public static function load($path)
     {
         $cache = true;  // enable caching
-        $cachefile = WEB_ROOT . '/cache' . getRootRelativeUrl(realpath($path)) . '.json';
+        $cachefile = CACHE_DIR . getRootRelativeUrl(realpath($path)) . '.json';
         if (!file_exists($cachefile) || filemtime($cachefile) < filemtime($path) || $cache == false) {
             $file = self::parse($path);
             if (!file_exists(dirname($cachefile))) {
