@@ -11,13 +11,13 @@ use Symfony\Component\Yaml\Yaml;
 
 class IOPYaml extends Yaml
 {
-    public static function parse($path)
+    public static function parse($path, $exceptionOnInvalidType = false, $objectSupport = false)
     {
         try {
             $path = new SplFileObject($path);
             $file = file_get_contents($path);
             $fileparts = preg_split('/\n*---\s*/', $file, 2, PREG_SPLIT_NO_EMPTY);
-            $yaml = parent::parse($fileparts[0]);
+            $yaml = parent::parse($fileparts[0], $exceptionOnInvalidType, $objectSupport);
             $boilerplate = array(
                 'slug' => $path->getBasename('.'. $path->getExtension()),
                 'yaml_source_file' => $path->getRealPath()
