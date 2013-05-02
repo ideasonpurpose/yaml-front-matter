@@ -8,6 +8,7 @@ use \RecursiveDirectoryIterator;
 use \RecursiveIteratorIterator;
 use \RegexIterator;
 use Symfony\Component\Yaml\Yaml;
+use dflydev\markdown\MarkdownParser;
 
 class IOPYaml extends Yaml
 {
@@ -16,6 +17,7 @@ class IOPYaml extends Yaml
         try {
             $path = new SplFileObject($path);
             $file = file_get_contents($path);
+            $markdownParser = new MarkdownParser();
             $fileparts = preg_split('/\n*---\s*/', $file, 2, PREG_SPLIT_NO_EMPTY);
             $yaml = parent::parse($fileparts[0], $exceptionOnInvalidType, $objectSupport);
             $boilerplate = array(
@@ -29,6 +31,9 @@ class IOPYaml extends Yaml
                     $yaml['body'] ='';
                 }
                 $yaml['body'] .= "\n" . $fileparts[1];
+            }
+            if (isset($yaml['body'])) {
+                $yaml['body'] = $markdownParser->transformMarkdown($yaml['body']);
             }
             return (is_array($yaml)) ? $yaml : array();
         } catch (Exception $e) {
