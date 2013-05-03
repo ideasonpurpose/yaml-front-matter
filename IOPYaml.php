@@ -8,7 +8,7 @@ use \RecursiveDirectoryIterator;
 use \RecursiveIteratorIterator;
 use \RegexIterator;
 use Symfony\Component\Yaml\Yaml;
-use dflydev\markdown\MarkdownParser;
+use dflydev\markdown\MarkdownExtraParser;
 
 class IOPYaml extends Yaml
 {
@@ -17,7 +17,7 @@ class IOPYaml extends Yaml
         try {
             $path = new SplFileObject($path);
             $file = file_get_contents($path);
-            $markdownParser = new MarkdownParser();
+            $markdownParser = new MarkdownExtraParser();
             $fileparts = preg_split('/\n*---\s*/', $file, 2, PREG_SPLIT_NO_EMPTY);
             $yaml = parent::parse($fileparts[0], $exceptionOnInvalidType, $objectSupport);
             $boilerplate = array(
@@ -27,10 +27,12 @@ class IOPYaml extends Yaml
             $yaml = array_merge($boilerplate, $yaml);
 
             if (isset($fileparts[1])) {
-                if (!isset($yaml['body'])) {
-                    $yaml['body'] ='';
+                if (isset($yaml['body'])) {
+                    $yaml['body'] = rtrim($yaml['body']) . "\n" . $fileparts[1];
+                } else {
+                    $yaml['body'] = $fileparts[1];
                 }
-                $yaml['body'] .= "\n" . $fileparts[1];
+
             }
             if (isset($yaml['body'])) {
                 $yaml['body'] = $markdownParser->transformMarkdown($yaml['body']);
@@ -127,7 +129,7 @@ class IOPYaml extends Yaml
 
         foreach ($Iterator as $file) {
             if (in_array(strtolower($file->getExtension()), array('yaml', 'yml'))) {
-                d($file->getPathname());
+                // d($file->getPathname());
                 continue;
                 $flat[] = $file->getPathname();
                 $path_parts = preg_split('#/#', str_replace($path, '', $file->getPath()), NULL, PREG_SPLIT_NO_EMPTY);
