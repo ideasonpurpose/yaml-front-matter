@@ -11,7 +11,6 @@ use Symfony\Component\Yaml\Yaml;
 use dflydev\markdown\MarkdownExtraParser;
 use Smartypants\Parser\SmartypantsParser;
 
-
 class IOPYaml extends Yaml
 {
     public static function parse($path, $exceptionOnInvalidType = false, $objectSupport = false)
