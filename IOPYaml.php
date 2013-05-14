@@ -17,7 +17,7 @@ class IOPYaml extends Yaml
     {
         try {
             $path = new SplFileObject($path);
-            $file = file_get_contents($path);
+            $file = file_get_contents($path->getRealPath());
             $markdownParser = new MarkdownExtraParser();
             $smartypants = new SmartypantsParser();
             $fileparts = preg_split('/\n*---\s*/', $file, 2, PREG_SPLIT_NO_EMPTY);
@@ -52,24 +52,43 @@ class IOPYaml extends Yaml
     }
 
     /**
-     * Load and cache YAML files.
+     * placeholder for the cacheLoad method
+     * Should be factored out?
      * @param  string $path Path to the YAML file
      * @return array       returns a parsed array
      */
     public static function load($path)
     {
-        $cache = true;  // enable caching
-        $cachefile = CACHE_DIR . getRootRelativeUrl(realpath($path)) . '.json';
-        if (!file_exists($cachefile) || filemtime($cachefile) < filemtime($path) || $cache == false) {
-            $file = self::parse($path);
+        return self::cacheLoad($path);
+    }
+
+
+    /**
+     * Load YAML files from cache, add new files to cache
+     * @param  string $path Path to the YAML file
+     * @return array       returns a parsed array
+     */
+    public static function cacheLoad($path)
+    {
+        // caching is enabled via the CACHE constant, defined at the top of functions.php
+        if (CACHE) {
+            // check if cache file exists and whether cache is newer than the source file
+            $cachefile = CACHE_DIR . getRootRelativeUrl(realpath($path)) . '.json';
+            if (file_exists($cachefile) && filemtime($cachefile) > filemtime($path)) {
+                return json_decode(file_get_contents($cachefile), true);
+            }
+        }
+        // if we're here, the cache was invalid
+        $data = self::parse($path);
+
+        if (CACHE) {
             if (!file_exists(dirname($cachefile))) {
                 mkdir(dirname($cachefile), 0755, true);
             }
-            file_put_contents($cachefile, json_encode($file));
-        } else {
-            $file = json_decode(file_get_contents($cachefile), true);
+            $cached = ['cached'=> time(), 'cachefile'=> $cachefile];
+            file_put_contents($cachefile, json_encode(array_merge($data, $cached)));
         }
-        return $file;
+        return $data;
     }
 
     /**
@@ -168,3 +187,4 @@ class IOPYaml extends Yaml
         return $tree;
     }
 }
+
