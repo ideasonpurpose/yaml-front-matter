@@ -103,16 +103,22 @@ class IOPYaml extends Yaml
         try {
             $dir = new DirectoryIterator($path);
             $Filter = new RegexIterator($dir, $pattern, RegexIterator::MATCH);
-            foreach ($Filter as $file) {
+        } catch (\Exception $e) {
+            // can't read the directory
+            return array();
+        }
+        foreach ($Filter as $file) {
+            try {
                 $contents = self::load($file->getPathname());
                 if ($contents) {
                     $files[] = $contents;
                 }
+            } catch (\Exception $e) {
+                $e->setParsedFile(getRelativePath(WEB_ROOT, $file->getPathname()));
+                $files['errors'][] = $e;
             }
-            return $files;
-        } catch (\Exception $e) {
-            return array();
         }
+        return $files;
     }
 
     /**
