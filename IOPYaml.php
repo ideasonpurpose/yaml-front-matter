@@ -19,7 +19,7 @@ class IOPYaml extends Yaml
             $path = new SplFileObject($path);
             $file = file_get_contents($path->getRealPath());
             $markdownParser = new MarkdownExtraParser();
-            $smartypants = new SmartypantsParser();
+            $smartypants = new SmartypantsParser(array('smart_dashes'=> 3));
             $fileparts = preg_split('/\n*---\s*/', $file, 2, PREG_SPLIT_NO_EMPTY);
             $yaml = parent::parse($fileparts[0], $exceptionOnInvalidType, $objectSupport);
             $boilerplate = array(
