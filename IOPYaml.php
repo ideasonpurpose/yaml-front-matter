@@ -5,6 +5,7 @@ namespace IOP;
 use \SplFileObject;
 use \DirectoryIterator;
 use \RecursiveDirectoryIterator;
+use \RecursiveRegexIterator;
 use \RecursiveIteratorIterator;
 use \RegexIterator;
 use Symfony\Component\Yaml\Yaml;
@@ -127,18 +128,18 @@ class IOPYaml extends Yaml
     public static function loadFilesInPathRecursive($path)
     {
         $files = array();
-        $pattern = '/\.ya?ml/i';
+        $pattern = '/\.ya?ml$/i';
         $Directory = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS);
-        $Iterator = new RecursiveIteratorIterator($Directory);
-        $Filter = new RegexIterator($Iterator, $pattern, RegexIterator::MATCH);
-        foreach ($Filter as $file) {
+        $NoDots = new RecursiveRegexIterator($Directory, '%^((?!/\.).)*$%');
+        $Iterator = new RecursiveIteratorIterator($NoDots);
+        $Filter = new RegexIterator($Iterator, $pattern);
+        foreach ($Filter as $key => $file) {
             $contents = self::load($file->getPathname());
             if ($contents) {
                 $files[] = $contents;
             }
         }
         return $files;
-
     }
 
     /**
