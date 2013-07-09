@@ -93,7 +93,10 @@ class YamlTests extends \PHPUnit_Framework_TestCase
 
     public function testLoadFilesInPath()
     {
-        $expected = array($this->yaml_files->one->content, $this->yaml_files->two->content);
+        $expected = array(
+            'one' => $this->yaml_files->one->content,
+            'two' => $this->yaml_files->two->content
+        );
         $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml/tree');
         $this->assertEquals($expected, $actual);
     }
