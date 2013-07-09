@@ -11,8 +11,6 @@ define('CACHE_DIR', '/tmp');
 
 require_once __DIR__ . '/../functions.php';
 
-
-// require_once __DIR__ . '/../lib/IOP/IOPYaml.php';
 use IOP\IOPYaml;
 
 class YamlTests extends \PHPUnit_Framework_TestCase
@@ -21,28 +19,27 @@ class YamlTests extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        // $this->yaml = new Yaml();
         $this->timing_iterations = 200;
 
-        $one = Array (
+        $one = array (
             'title'=> 'YAML test file',
             'slug' => 'one',
             'array' => array('red', 'blue', 'green', 'yellow'),
             'yaml_source_file' => __DIR__ . '/yaml/tree/one.yaml');
 
-        $two = Array (
+        $two = array (
             'title'=> 'YAML test file',
             'slug' => 'two',
             'array' => array('up', 'down', 'left', 'right'),
             'yaml_source_file' => __DIR__ . '/yaml/tree/two.yaml');
 
-        $three = Array (
+        $three = array (
             'title'=> 'YAML test file 3',
             'slug' => 'three',
             'array' => array('cow', 'goat', 'pig', 'chicken'),
             'yaml_source_file' => __DIR__ . '/yaml/tree/subfolder/three.yaml');
 
-        $frontmatter1 = Array (
+        $frontmatter1 = array (
             'slug' => 'frontmatter-one-delimiter',
             'yaml_source_file' =>  __DIR__ . 'yaml/frontmatter-one-delimiter.yaml',
             'title' => 'Testing YAML frontmatter',
