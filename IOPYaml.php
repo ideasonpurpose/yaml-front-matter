@@ -7,6 +7,7 @@ use \DirectoryIterator;
 use \RecursiveDirectoryIterator;
 use \RecursiveRegexIterator;
 use \RecursiveIteratorIterator;
+use \ArrayIterator;
 use \RegexIterator;
 use Symfony\Component\Yaml\Yaml;
 use dflydev\markdown\MarkdownExtraParser;
@@ -64,6 +65,7 @@ class IOPYaml extends Yaml
     }
 
 
+    // TODO: Move caching stuff into the Cache library
     /**
      * Load YAML files from cache, add new files to cache
      * @param  string $path Path to the YAML file
@@ -71,24 +73,14 @@ class IOPYaml extends Yaml
      */
     public static function cacheLoad($path)
     {
-        // caching is enabled via the CACHE constant, defined at the top of functions.php
-        if (CACHE) {
-            // check if cache file exists and whether cache is newer than the source file
-            $cachefile = CACHE_DIR . getRootRelativeUrl(realpath($path)) . '.json';
-            if (file_exists($cachefile) && filemtime($cachefile) > filemtime($path)) {
-                return json_decode(file_get_contents($cachefile), true);
-            }
+        $cached_data = Cache::get($path);
+        if ($cached_data) {
+            return $cached_data;
         }
-        // if we're here, the cache was invalid
+
         $data = self::parse($path);
 
-        if (CACHE) {
-            if (!file_exists(dirname($cachefile))) {
-                mkdir(dirname($cachefile), 0755, true);
-            }
-            $cached = ['cached'=> time(), 'cachefile'=> $cachefile];
-            file_put_contents($cachefile, json_encode(array_merge($data, $cached)));
-        }
+        CACHE::set($data, $path);
         return $data;
     }
 
@@ -129,12 +121,10 @@ class IOPYaml extends Yaml
     {
         $files = array();
         $pattern = '/\.ya?ml$/i';
-        $Directory = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS);
-        $NoDots = new RecursiveRegexIterator($Directory, '%^((?!/\.).)*$%');
-        $Iterator = new RecursiveIteratorIterator($NoDots);
+        $Iterator = new ArrayIterator(Cache::fileList($path));
         $Filter = new RegexIterator($Iterator, $pattern);
         foreach ($Filter as $key => $file) {
-            $contents = self::load($file->getPathname());
+            $contents = self::load($file);
             if ($contents) {
                 $files[] = $contents;
             }
