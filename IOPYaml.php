@@ -101,16 +101,12 @@ class IOPYaml extends Yaml
             return array();
         }
         foreach ($Filter as $file) {
-            try {
-                $contents = self::load($file->getPathname());
-                if ($contents) {
-                    $files[] = $contents;
-                }
-            } catch (\Exception $e) {
-                $e->setParsedFile(getRelativePath(WEB_ROOT, $file->getPathname()));
-                $files['errors'][] = $e;
+            $contents = self::load($file->getPathname());
+            if ($contents) {
+                $files[$contents['slug']] = $contents;
             }
         }
+        ksort($files);
         return $files;
     }
 
@@ -126,9 +122,10 @@ class IOPYaml extends Yaml
         foreach ($Filter as $key => $file) {
             $contents = self::load($file);
             if ($contents) {
-                $files[] = $contents;
+                $files[$contents['slug']] = $contents;
             }
         }
+        ksort($files);
         return $files;
     }
 
