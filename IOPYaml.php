@@ -42,6 +42,10 @@ class IOPYaml extends Yaml
                 $yaml['body'] = $markdownParser->transformMarkdown($yaml['body']);
                 $yaml['body'] = $smartypants->transform($yaml['body']);
             }
+            $trim_strings = function (&$str) {
+                $str = ((is_string($str))) ? trim($str) : $str;
+            };
+            array_walk_recursive($yaml, $trim_strings);
             return (is_array($yaml)) ? $yaml : array();
         } catch (Exception $e) {
             if (get_class($path) == 'SplFileObject') {
