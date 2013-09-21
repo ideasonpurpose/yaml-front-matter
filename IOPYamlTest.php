@@ -48,8 +48,6 @@ class YamlTests extends \PHPUnit_Framework_TestCase
         $frontmatter2 = $frontmatter1;
         $frontmatter2['yaml_source_file'] = __DIR__ . 'yaml/frontmatter-two-delimiters.yaml';
 
-
-
         $this->yaml_files = (object) array(
             'one'=>(object) array('file'=>'/yaml/tree/one.yaml', 'content'=>$one),
             'two'=>(object) array('file'=>'/yaml/tree/two.yaml', 'content'=>$two),
@@ -62,6 +60,10 @@ class YamlTests extends \PHPUnit_Framework_TestCase
                 'pages' => array($this->yaml_files->three->content)),
             'two' => $this->yaml_files->two->content,
             'pages' => array($this->yaml_files->one->content, $this->yaml_files->two->content));
+
+        // Use var_export() for paste-friendly dumps of parsed yaml files:
+        $this->with_index = array ('array' => array (0 => 'item', ), 'files' => array ('filler' => array ('slug' => 'filler', 'yaml_source_file' => '/Users/joe/Sites/iop/app/Tests/yaml/with_index/filler.yaml', 'title' => 'YAML filler', 'array' => array (0 => 'lard', ), ), ), 'slug' => 'with_index', 'title' => 'With Index Test File', 'yaml_source_file' => '/Users/joe/Sites/iop/app/Tests/yaml/with_index/with_index.yaml', );
+        $this->index_only = array ('array' => array (0 => 'item', ), 'files' => array (), 'slug' => 'index_only', 'title' => 'Index Only Test File', 'yaml_source_file' => '/Users/joe/Sites/iop/app/Tests/yaml/index_only/index_only.yaml', );
     }
 
 
@@ -71,15 +73,6 @@ class YamlTests extends \PHPUnit_Framework_TestCase
         $expected = $yaml->content;
         $actual = IOPYaml::load(dirname(__FILE__) . $yaml->file);
         $this->assertEquals($expected, $actual);
-    }
-
-    public function testYamlObjectLoadMethodLooped()
-    {
-        $yaml = $this->yaml_files->one;
-        for ($i=1; $i < $this->timing_iterations; $i++) {
-            IOPYaml::load(__DIR__ . $yaml->file);
-        }
-        $this->assertTrue(true);
     }
 
     public function testLoadYamlAddsSlug()
@@ -98,21 +91,19 @@ class YamlTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testLoadFilesInPathLooped()
+    public function testLoadFilesInPathWithIndex()
     {
-        for ($i=1; $i < $this->timing_iterations; $i++) {
-            IOPYaml::loadFilesInPath(__DIR__ . '/yaml/tree');
-        }
-        $this->assertTrue(true);
+        $expected = $this->with_index;
+        $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml/with_index');
+        $this->assertEquals($expected, $actual);
     }
 
-    // NOTE: Temporarily disabled while rebuilding the IOPYaml::loadTree() method
-    // public function test_yaml_loadTree()
-    // {
-    //   $expected = $this->yaml_tree;
-    //   $actual = IOPYaml::loadTree(__DIR__ . '/yaml/tree');
-    //   $this->assertEquals($expected, $actual);
-    // }
+    public function testLoadFilesInPathIndexOnly()
+    {
+        $expected = $this->index_only;
+        $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml/index_only');
+        $this->assertEquals($expected, $actual);
+    }
 
     public function testLoadFilesInNotAPath()
     {
