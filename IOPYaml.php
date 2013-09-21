@@ -90,6 +90,9 @@ class IOPYaml extends Yaml
 
     /**
      * Loads all yaml files in $path
+     * If there's a yaml file whose name matches the directory's basename
+     * then that file is merged up and the rest of the files are delivered in a
+     * "files" array.
      * @param  string $path The path to search for YAML files
      * @return array       Returns either an array of parsed YAML or an empty array
      */
@@ -109,6 +112,13 @@ class IOPYaml extends Yaml
             if ($contents) {
                 $files[$contents['slug']] = $contents;
             }
+        }
+        if (isset($files[basename($path)])) {
+            $tmp = [];
+            $tmp = array_merge($tmp, $files[basename($path)]);
+            unset($files[basename($path)]);
+            $tmp['files'] = $files;
+            $files = $tmp;
         }
         ksort($files);
         return $files;
