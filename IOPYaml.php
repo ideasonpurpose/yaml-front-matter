@@ -108,6 +108,9 @@ class IOPYaml extends Yaml
             return array();
         }
         foreach ($Filter as $file) {
+            if ($file->getBasename()[0] == '_') {
+                continue;
+            }
             $contents = self::load($file->getPathname());
             if ($contents) {
                 $files[$contents['slug']] = $contents;
