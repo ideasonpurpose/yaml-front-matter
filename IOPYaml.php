@@ -99,7 +99,7 @@ class IOPYaml extends Yaml
     public static function loadFilesInPath($path)
     {
         $files = array();
-        $pattern = '/\.ya?ml/i';
+        $pattern = '/\.ya?ml$/i';
         try {
             $dir = new DirectoryIterator($path);
             $Filter = new RegexIterator($dir, $pattern, RegexIterator::MATCH);
