@@ -114,11 +114,33 @@ class YamlTests extends \PHPUnit_Framework_TestCase
     {
         $actual = IOPYaml::parse(__DIR__ . '/yaml/frontmatter-one-delimiter.yaml');
         $this->assertEquals(4, count($actual));
+        $this->assertEquals('Testing YAML frontmatter', $actual['title']);
     }
 
     public function testYamlFrontmatterTwoDelimiters()
     {
         $actual = IOPYaml::parse(__DIR__ . '/yaml/frontmatter-two-delimiters.yaml');
         $this->assertEquals(4, count($actual));
+    }
+
+    public function testEmptyFrontMatter()
+    {
+        $expected = '<p>The frontmatter is <em>empty</em>.</p>';
+        $actual = IOPYaml::load(__DIR__ . '/yaml/markdown_passthrough/empty_frontmatter.yaml');
+        $this->assertEquals($expected, $actual['body']);
+    }
+
+    public function testNoFrontMatter()
+    {
+        $expected = '<p>This is just <strong>Markdown</strong></p>';
+        $actual = IOPYaml::load(__DIR__ . '/yaml/markdown_passthrough/no_frontmatter.md');
+        $this->assertEquals($expected, $actual['body']);
+    }
+
+    public function testTwoBodies()
+    {
+        $expected = "<p>One</p>\n\n<p>Two</p>";
+        $actual = IOPYaml::load(__DIR__ . '/yaml/two_bodies.yaml');
+        $this->assertEquals($expected, $actual['body']);
     }
 }
