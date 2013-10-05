@@ -23,37 +23,44 @@ class IOPYaml extends Yaml
             $markdownParser = new MarkdownExtraParser();
             $smartypants = new SmartypantsParser(array('smart_dashes'=> 3));
             $fileparts = preg_split('/\n*---\s*/', $file, 2, PREG_SPLIT_NO_EMPTY);
-            $yaml = parent::parse($fileparts[0], $exceptionOnInvalidType, $objectSupport);
-            $boilerplate = array(
-                'slug' => $path->getBasename('.'. $path->getExtension()),
-                'yaml_source_file' => $path->getRealPath()
-                );
-            $yaml = array_merge($boilerplate, $yaml);
+            try {
+                $yaml = parent::parse($fileparts[0], $exceptionOnInvalidType, $objectSupport);
+            } catch (\Exception $e) {
+                $yaml = array('body' => $file);
+            }
 
             if (isset($fileparts[1])) {
                 if (isset($yaml['body'])) {
-                    $yaml['body'] = rtrim($yaml['body']) . "\n" . $fileparts[1];
+                    $yaml['body'] = rtrim($yaml['body']) . "\n\n" . $fileparts[1];
                 } else {
                     $yaml['body'] = $fileparts[1];
                 }
-
+            } else {
+                if (is_string($yaml)) {
+                    $yaml = array('body' => $yaml);
+                }
             }
             if (isset($yaml['body'])) {
                 $yaml['body'] = $markdownParser->transformMarkdown($yaml['body']);
                 $yaml['body'] = $smartypants->transform($yaml['body']);
             }
+            $boilerplate = array(
+                'slug' => $path->getBasename('.'. $path->getExtension()),
+                'yaml_source_file' => $path->getRealPath()
+                );
+            $yaml = array_merge($boilerplate, $yaml);
             $trim_strings = function (&$str) {
                 $str = ((is_string($str))) ? trim($str) : $str;
             };
             array_walk_recursive($yaml, $trim_strings);
             return (is_array($yaml)) ? $yaml : array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if (get_class($path) == 'SplFileObject') {
                 $path = $path->getFilename();
             }
             printf(ERROR_FORMAT, "An error occurred: Unable to parse '$path'\n");
             printf(ERROR_FORMAT, implode("\n\t", explode("\n", $e)) . "\n");
-            return array();
+            return array('IOPYamlError' => $e);
         }
     }
 
