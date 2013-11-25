@@ -48,6 +48,11 @@ class YamlTests extends \PHPUnit_Framework_TestCase
         $frontmatter2 = $frontmatter1;
         $frontmatter2['yaml_source_file'] = __DIR__ . 'yaml/frontmatter-two-delimiters.yaml';
 
+        $frontmatter_empty = array (
+            'slug' => 'frontmatter-empty-body',
+            'yaml_source_file' => __DIR__ . 'yaml/frontmatter-empty-body.yaml',
+            'title' => "There is no text after the '---' delimiter");
+
         $this->yaml_files = (object) array(
             'one'=>(object) array('file'=>'/yaml/tree/one.yaml', 'content'=>$one),
             'two'=>(object) array('file'=>'/yaml/tree/two.yaml', 'content'=>$two),
@@ -113,6 +118,7 @@ class YamlTests extends \PHPUnit_Framework_TestCase
     public function testYamlFrontmatterOneDelimiter()
     {
         $actual = IOPYaml::parse(__DIR__ . '/yaml/frontmatter-one-delimiter.yaml');
+        // 4 implies the array contains 4 keys; slug, yaml_source_file, title, and body
         $this->assertEquals(4, count($actual));
         $this->assertEquals('Testing YAML frontmatter', $actual['title']);
     }
@@ -142,5 +148,11 @@ class YamlTests extends \PHPUnit_Framework_TestCase
         $expected = "<p>One</p>\n\n<p>Two</p>";
         $actual = IOPYaml::load(__DIR__ . '/yaml/two_bodies.yaml');
         $this->assertEquals($expected, $actual['body']);
+    }
+
+    public function testEmptyBody()
+    {
+        $actual = IOPYaml::load(__DIR__ . '/yaml/frontmatter-empty-body.yaml');
+        $this->assertArrayNotHasKey('body', $actual);
     }
 }
