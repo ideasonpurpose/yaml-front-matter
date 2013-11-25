@@ -22,7 +22,7 @@ class IOPYaml extends Yaml
             $file = file_get_contents($path->getRealPath());
             $markdownParser = new MarkdownExtraParser();
             $smartypants = new SmartypantsParser(array('smart_dashes'=> 3));
-            $fileparts = preg_split('/\n*---\s*/', $file, 2, PREG_SPLIT_NO_EMPTY);
+            $fileparts = preg_split('/^---\s*$/m', $file, 2, PREG_SPLIT_NO_EMPTY);
             try {
                 $yaml = parent::parse($fileparts[0], $exceptionOnInvalidType, $objectSupport);
             } catch (\Exception $e) {
@@ -36,6 +36,7 @@ class IOPYaml extends Yaml
                     $yaml['body'] = $fileparts[1];
                 }
             } else {
+                // TODO: does this ever get called?
                 if (is_string($yaml)) {
                     $yaml = array('body' => $yaml);
                 }
