@@ -10,8 +10,8 @@ use \RecursiveIteratorIterator;
 use \ArrayIterator;
 use \RegexIterator;
 use Symfony\Component\Yaml\Yaml;
-use dflydev\markdown\MarkdownExtraParser;
-use Smartypants\Parser\SmartypantsParser;
+use \Michelf\MarkdownExtra;
+use \Michelf\SmartyPants;
 
 class IOPYaml extends Yaml
 {
@@ -20,8 +20,6 @@ class IOPYaml extends Yaml
         try {
             $path = new SplFileObject($path);
             $file = file_get_contents($path->getRealPath());
-            $markdownParser = new MarkdownExtraParser();
-            $smartypants = new SmartypantsParser(array('smart_dashes'=> 3));
             $fileparts = preg_split('/^---\s*$/m', $file, 2, PREG_SPLIT_NO_EMPTY);
             try {
                 $yaml = parent::parse($fileparts[0], $exceptionOnInvalidType, $objectSupport);
@@ -42,8 +40,8 @@ class IOPYaml extends Yaml
                 }
             }
             if (isset($yaml['body'])) {
-                $yaml['body'] = $markdownParser->transformMarkdown($yaml['body']);
-                $yaml['body'] = $smartypants->transform($yaml['body']);
+                $yaml['body'] = MarkdownExtra::defaultTransform($yaml['body']);
+                $yaml['body'] = SmartyPants::defaultTransform($yaml['body'], 3);
             }
             $boilerplate = array(
                 'slug' => $path->getBasename('.'. $path->getExtension()),
