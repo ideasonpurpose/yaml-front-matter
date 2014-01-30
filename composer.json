@@ -1,0 +1,17 @@
+{
+    "name": "ideasonpurpose/yaml-front-matter",
+    "description": "A library for load and parse files with YAML front matter and HTML or Markdown content",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joe Maller",
+            "email": "joe@ideasonpurpose.com"
+        }
+    ],
+    "require": {
+        "symfony/yaml": "2.*",
+        "monolog/monolog": "1.7.*",
+        "michelf/php-markdown": "1.4.*",
+        "michelf/php-smartypants": "1.6.*"
+    }
+}
