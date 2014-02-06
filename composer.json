@@ -13,5 +13,10 @@
         "monolog/monolog": "1.7.*",
         "michelf/php-markdown": "1.4.*",
         "michelf/php-smartypants": "1.6.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "IOP": "src/"
+        }
     }
 }

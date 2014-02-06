@@ -2,23 +2,20 @@
 
 namespace IOP;
 
-use \SplFileObject;
+// use \SplFileObject;
 use \DirectoryIterator;
 use \RecursiveDirectoryIterator;
 use \RecursiveRegexIterator;
 use \RecursiveIteratorIterator;
 use \ArrayIterator;
 use \RegexIterator;
-use Symfony\Component\Yaml\Yaml;
-use \Michelf\MarkdownExtra;
-use \Michelf\SmartyPants;
 
-class IOPYaml extends Yaml
+class Yaml extends \Symfony\Component\Yaml\Yaml
 {
     public static function parse($path, $exceptionOnInvalidType = false, $objectSupport = false)
     {
         try {
-            $path = new SplFileObject($path);
+            $path = new \SplFileObject($path);
             $file = file_get_contents($path->getRealPath());
             $fileparts = preg_split('/^---\s*$/m', $file, 2, PREG_SPLIT_NO_EMPTY);
             try {
@@ -40,8 +37,8 @@ class IOPYaml extends Yaml
                 }
             }
             if (isset($yaml['body'])) {
-                $yaml['body'] = MarkdownExtra::defaultTransform($yaml['body']);
-                $yaml['body'] = SmartyPants::defaultTransform($yaml['body'], 3);
+                $yaml['body'] = \Michelf\MarkdownExtra::defaultTransform($yaml['body']);
+                $yaml['body'] = \Michelf\SmartyPants::defaultTransform($yaml['body'], 3);
             }
             $boilerplate = array(
                 'slug' => $path->getBasename('.'. $path->getExtension()),
