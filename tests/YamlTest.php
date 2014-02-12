@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace IOP\Test;
 
 // fake the server location for error reporting
 $_SERVER['HTTP_HOST'] = 'ideasonpurpose.com';
@@ -9,9 +9,9 @@ $_SERVER['HTTP_HOST'] = 'ideasonpurpose.com';
 define('CACHE', false);
 define('CACHE_DIR', '/tmp');
 
-require_once __DIR__ . '/../functions.php';
+// require_once __DIR__ . '/../functions.php';
 
-use IOP\IOPYaml;
+use IOP\Yaml;
 
 class YamlTests extends \PHPUnit_Framework_TestCase
 {
@@ -76,48 +76,48 @@ class YamlTests extends \PHPUnit_Framework_TestCase
     {
         $yaml = $this->yaml_files->one;
         $expected = $yaml->content;
-        $actual = IOPYaml::load(dirname(__FILE__) . $yaml->file);
+        $actual = Yaml::parse(dirname(__FILE__) . $yaml->file);
         $this->assertEquals($expected, $actual);
     }
 
     public function testLoadYamlAddsSlug()
     {
-        $yaml = IOPYaml::load(dirname(__FILE__) . $this->yaml_files->one->file);
+        $yaml = Yaml::parse(dirname(__FILE__) . $this->yaml_files->one->file);
         $this->assertArrayHasKey('slug', $yaml);
     }
 
-    public function testLoadFilesInPath()
-    {
-        $expected = array(
-            'one' => $this->yaml_files->one->content,
-            'two' => $this->yaml_files->two->content
-        );
-        $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml/tree');
-        $this->assertEquals($expected, $actual);
-    }
+    // public function testLoadFilesInPath()
+    // {
+    //     $expected = array(
+    //         'one' => $this->yaml_files->one->content,
+    //         'two' => $this->yaml_files->two->content
+    //     );
+    //     $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml/tree');
+    //     $this->assertEquals($expected, $actual);
+    // }
 
-    public function testLoadFilesInPathWithIndex()
-    {
-        $expected = $this->with_index;
-        $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml/with_index');
-        $this->assertEquals($expected, $actual);
-    }
+    // public function testLoadFilesInPathWithIndex()
+    // {
+    //     $expected = $this->with_index;
+    //     $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml/with_index');
+    //     $this->assertEquals($expected, $actual);
+    // }
 
-    public function testLoadFilesInPathIndexOnly()
-    {
-        $expected = $this->index_only;
-        $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml/index_only');
-        $this->assertEquals($expected, $actual);
-    }
+    // public function testLoadFilesInPathIndexOnly()
+    // {
+    //     $expected = $this->index_only;
+    //     $actual = IOPYaml::loadFilesInPath(__DIR__ . '/yaml/index_only');
+    //     $this->assertEquals($expected, $actual);
+    // }
 
-    public function testLoadFilesInNotAPath()
-    {
-        $this->assertEmpty(IOPYaml::loadFilesInPath(__DIR__ . 'not_a_path'));
-    }
+    // public function testLoadFilesInNotAPath()
+    // {
+    //     $this->assertEmpty(IOPYaml::loadFilesInPath(__DIR__ . 'not_a_path'));
+    // }
 
     public function testYamlFrontmatterOneDelimiter()
     {
-        $actual = IOPYaml::parse(__DIR__ . '/yaml/frontmatter-one-delimiter.yaml');
+        $actual = Yaml::parse(__DIR__ . '/yaml/frontmatter-one-delimiter.yaml');
         // 4 implies the array contains 4 keys; slug, yaml_source_file, title, and body
         $this->assertEquals(4, count($actual));
         $this->assertEquals('Testing YAML frontmatter', $actual['title']);
@@ -125,34 +125,34 @@ class YamlTests extends \PHPUnit_Framework_TestCase
 
     public function testYamlFrontmatterTwoDelimiters()
     {
-        $actual = IOPYaml::parse(__DIR__ . '/yaml/frontmatter-two-delimiters.yaml');
+        $actual = Yaml::parse(__DIR__ . '/yaml/frontmatter-two-delimiters.yaml');
         $this->assertEquals(4, count($actual));
     }
 
     public function testEmptyFrontMatter()
     {
         $expected = '<p>The frontmatter is <em>empty</em>.</p>';
-        $actual = IOPYaml::load(__DIR__ . '/yaml/markdown_passthrough/empty_frontmatter.yaml');
+        $actual = Yaml::parse(__DIR__ . '/yaml/markdown_passthrough/empty_frontmatter.yaml');
         $this->assertEquals($expected, $actual['body']);
     }
 
     public function testNoFrontMatter()
     {
         $expected = '<p>This is just <strong>Markdown</strong></p>';
-        $actual = IOPYaml::load(__DIR__ . '/yaml/markdown_passthrough/no_frontmatter.md');
+        $actual = Yaml::parse(__DIR__ . '/yaml/markdown_passthrough/no_frontmatter.md');
         $this->assertEquals($expected, $actual['body']);
     }
 
     public function testTwoBodies()
     {
         $expected = "<p>One</p>\n\n<p>Two</p>";
-        $actual = IOPYaml::load(__DIR__ . '/yaml/two_bodies.yaml');
+        $actual = Yaml::parse(__DIR__ . '/yaml/two_bodies.yaml');
         $this->assertEquals($expected, $actual['body']);
     }
 
     public function testEmptyBody()
     {
-        $actual = IOPYaml::load(__DIR__ . '/yaml/frontmatter-empty-body.yaml');
+        $actual = Yaml::parse(__DIR__ . '/yaml/frontmatter-empty-body.yaml');
         $this->assertArrayNotHasKey('body', $actual);
     }
 }
