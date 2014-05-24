@@ -14,6 +14,12 @@ class Yaml extends \Symfony\Component\Yaml\Yaml
 {
     public static function parse($path, $exceptionOnInvalidType = false, $objectSupport = false)
     {
+        if (ini_get('display_errors')) {
+            $error_format = "<span class='debug'><pre>%s</pre></span>\n";
+        } else {
+            $error_format = "<!-- %s -->\n";
+        }
+
         try {
             $path = new \SplFileObject($path);
             $file = file_get_contents($path->getRealPath());
@@ -40,6 +46,11 @@ class Yaml extends \Symfony\Component\Yaml\Yaml
                 $yaml['body'] = \Michelf\MarkdownExtra::defaultTransform($yaml['body']);
                 $yaml['body'] = \Michelf\SmartyPants::defaultTransform($yaml['body'], 3);
             }
+            if (isset($yaml['callout'])) {
+                $yaml['callout'] = \Michelf\MarkdownExtra::defaultTransform($yaml['callout']);
+                $yaml['callout'] = \Michelf\SmartyPants::defaultTransform($yaml['callout'], 3);
+            }
+
             $boilerplate = array(
                 'slug' => $path->getBasename('.'. $path->getExtension()),
                 'yaml_source_file' => $path->getRealPath()
@@ -54,8 +65,8 @@ class Yaml extends \Symfony\Component\Yaml\Yaml
             if (get_class($path) == 'SplFileObject') {
                 $path = $path->getFilename();
             }
-            printf(ERROR_FORMAT, "An error occurred: Unable to parse '$path'\n");
-            printf(ERROR_FORMAT, implode("\n\t", explode("\n", $e)) . "\n");
+            printf($error_format, "An error occurred: Unable to parse '$path'\n");
+            printf($error_format, implode("\n\t", explode("\n", $e)) . "\n");
             return array('IOPYamlError' => $e);
         }
     }
