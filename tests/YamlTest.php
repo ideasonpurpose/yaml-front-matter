@@ -6,8 +6,8 @@ namespace IOP\Test;
 $_SERVER['HTTP_HOST'] = 'ideasonpurpose.com';
 
 // Use custom Cache location since tests run as a different user
-define('CACHE', false);
-define('CACHE_DIR', '/tmp');
+// define('CACHE', false);
+// define('CACHE_DIR', '/tmp');
 
 // require_once __DIR__ . '/../functions.php';
 
