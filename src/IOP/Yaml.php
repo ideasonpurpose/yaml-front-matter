@@ -62,6 +62,7 @@ class Yaml extends \Symfony\Component\Yaml\Yaml
             array_walk_recursive($yaml, $trim_strings);
             return (is_array($yaml)) ? $yaml : array();
         } catch (\Exception $e) {
+            throw $e;
             if (get_class($path) == 'SplFileObject') {
                 $path = $path->getFilename();
             }

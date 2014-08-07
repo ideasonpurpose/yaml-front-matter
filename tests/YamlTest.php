@@ -3,7 +3,7 @@
 namespace IOP\Test;
 
 // fake the server location for error reporting
-$_SERVER['HTTP_HOST'] = 'ideasonpurpose.com';
+// $_SERVER['HTTP_HOST'] = 'ideasonpurpose.com';
 
 // Use custom Cache location since tests run as a different user
 // define('CACHE', false);
@@ -154,5 +154,36 @@ class YamlTests extends \PHPUnit_Framework_TestCase
     {
         $actual = Yaml::parse(__DIR__ . '/yaml/frontmatter-empty-body.yaml');
         $this->assertArrayNotHasKey('body', $actual);
+    }
+
+    /**
+     * @test
+     * TODO: This seems like it should throw an exception,
+     * if the YAML file can't be read, the file's contents are dumped into the body
+     */
+    public function invalidFile()
+    {
+        $src = __DIR__ . '/yaml/invalid.yml';
+        $yaml = Yaml::parse($src);
+        $actual = file_get_contents($src);
+        $this->assertEquals($yaml['body'], $actual);
+    }
+
+    /**
+     * @test
+     * @expectedException     RuntimeException
+     */
+    public function nonexistentFile()
+    {
+        Yaml::parse(__DIR__ . '/nonexistent_file.yml');
+    }
+
+    /**
+     * @test
+     * @expectedException     RuntimeException
+     */
+    public function emptyFile()
+    {
+        Yaml::parse('');
     }
 }
