@@ -43,9 +43,8 @@ class Yaml extends \Symfony\Component\Yaml\Yaml
             );
 
         $content = array_merge($boilerplate, $content);
-
-        array_walk_recursive($content, function ($str) {
-            return (is_string($str)) ? trim($str) : $str;
+        array_walk_recursive($content, function (&$str) {
+            $str = (is_string($str)) ? trim($str) : $str;
         });
 
         return $content;
