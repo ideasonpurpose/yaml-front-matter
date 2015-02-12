@@ -20,8 +20,15 @@ class Yaml extends \Symfony\Component\Yaml\Yaml
 
         try {
             $content = parent::parse($fileparts[0], $exceptionOnInvalidType, $objectSupport);
+            if (is_string($content)) {
+                $content = ['body' => $content];
+            }
             if (count($fileparts) > 1) {
-                $content['body'] = $fileparts[1];
+                if (array_key_exists('body', $content)) {
+                    $content['body'] .= "\n\n" . $fileparts[1];
+                } else {
+                    $content['body'] = $fileparts[1];
+                }
             }
         } catch (\Exception $e) {
             // Failed to parse as Yaml, try the whole file as Markdown
