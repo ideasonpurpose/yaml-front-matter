@@ -131,7 +131,7 @@ class YamlTests extends \PHPUnit_Framework_TestCase
 
     public function testEmptyFrontMatter()
     {
-        $expected = '<p>The frontmatter is <em>empty</em>.</p>';
+        $expected = "<hr />\n\n<p>The frontmatter is <em>empty</em>.</p>";
         $actual = Yaml::parse(__DIR__ . '/yaml/markdown_passthrough/empty_frontmatter.yaml');
         $this->assertEquals($expected, $actual['body']);
     }
